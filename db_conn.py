@@ -70,7 +70,7 @@ class Variable:
         
     def set_state(self):
         """ Устанавливает статус переменной"""
-        self.state = good_state == self.state # TODO: Это что такое? Проверить и переделать
+        self.state = self.good_state # TODO: Это что такое? Проверить и переделать UPD - Поправил, а нужен ли он вообще?
         
     def start_event(self):
         """ Здесь инициируется Событие"""
