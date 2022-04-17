@@ -13,13 +13,15 @@ logging.basicConfig(
     format='[%(levelname)s]: %(asctime)s %(message)s', 
     level=logging.DEBUG)
 
-PLC_ADS_ADR = '10.44.1.14.1.1'
+#PLC_ADS_ADR = '10.44.1.14.1.1'
+PLC_ADS_ADR_HOME = '192.168.1.177.1.1'
 PLC_ADS_PORT = 801
 USER_NAME = 'admin'
 
 TEST_DATA = (datetime.datetime.now(),datetime.datetime.now(),random.randint(0,100),'PLC.TEST_BOOL','admin')
 
-connection_info = "dbname=combiner_data user=admin password=admin host=localhost"
+#connection_info = "dbname=combiner_data user=admin password=admin host=localhost"
+connection_info = "dbname=combiner_data user=postgres password=1122 host=localhost"
 
 variable_list = ['PF_Paper_Unwinding.bobbin_change_diameter_npr',
                 'FC_M3_Receiver_Ch2_Interface.o_filter_sender_ok_dvr',
@@ -127,9 +129,9 @@ def main():
         connection_to_db = psycopg.connect(connection_info)
         logging.info('Conntcted to DB')
         # Create connection to PLC 
-        connection_to_plc = pyads.Connection(PLC_ADS_ADR, PLC_ADS_PORT)
+        connection_to_plc = pyads.Connection(PLC_ADS_ADR_HOME, PLC_ADS_PORT)
         connection_to_plc.open()
-        logging.info(f'Conntcted to PLC. Address: {PLC_ADS_ADR}')
+        logging.info(f'Conntcted to PLC. Address: {PLC_ADS_ADR_HOME}')
         # Make variable obj # TODO: Нормальный метод получения переменных
         obj = [Variable('FC_M3_Receiver_Ch1_Interface.o_filter_sender_ok_dvr',pyads.PLCTYPE_BOOL,True), 
                Variable('FC_M3_Receiver_Ch2_Interface.o_filter_sender_ok_dvr',pyads.PLCTYPE_BOOL,True)]
@@ -158,6 +160,7 @@ def main():
     finally:
         connection_to_db.close()
         connection_to_plc.close()
+        logging.info(f'All connections is closed.')
 
 
 if __name__ == '__main__':
