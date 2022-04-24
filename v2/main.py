@@ -7,6 +7,11 @@ def db_execute(query,data):
 
 
 class Plc:
+    """
+    
+    Класс в котором происходит работа с контроллером. 
+
+    """
     def __init__(self,address):
         self.address = address
         self.connect()
@@ -81,6 +86,7 @@ class SwitchControl(StateControler):
 
     @property
     def time_of_switch(self):
+        """ Фиксация времени изменения переменной """
         return datetime.datetime.now()
 
     def get_data(self):
