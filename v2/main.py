@@ -70,6 +70,10 @@ class StateControler:
 
 
 class SwitchControl(StateControler):
+    """
+    Наследник StateController.  Описывает поведение переменной "переключатель".
+    Фиксирует изменение состояния Bool переменной. Идёт фиксация времени и состояние.
+    """
 
     QUERY = 'SWITCH_QUERY'
 
