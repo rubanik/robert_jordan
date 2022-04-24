@@ -23,11 +23,11 @@ class Variable:
 
     def __init__(self,path,var_type,plc,
                 name='',ctrl_type = 'state', test = False):
-        self.path = path
-        self.name = name if name else path
-        self.var_type = var_type
-        self.plc = plc
-        self.test = test
+        self.path = path                    # Path to variable according to PLC variable path in the symbol table.
+        self.name = name if name else path  # Human-readable name, it will be the self.path if you don't want to set it.
+        self.var_type = var_type            # TYPE of PLC variable - pyads types.( INT, BOOL, STRING, ARRAY etc)
+        self.plc = plc                      # Instance of the plc object.
+        self.test = test                    # Use it if you do not have PLC. Set to TRUE if you need to do small test...
 
     @property
     def value(self):
