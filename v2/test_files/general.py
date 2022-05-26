@@ -1,97 +1,9 @@
 import datetime
 import pyads
-import psycopg2
+import psycopg as psycopg2
 
-
-class Database:
-
-    DB_NAME = 'RRP_FilterReceiverData'
-    DB_USER = 'remote_user'
-    DB_PASS = 'remote'
-    DB_HOST = '10.143.253.45'
-    DB_ALT = 'CSV'              # Альтернативная DB. На счучай сбоя в подключении.
-
-    DB_CONNECTION_STR = f'dbname={DB_NAME} user={DB_USER} password={DB_PASS} host={DB_HOST}'
-
-    def __init__(self):
-        self.connected = False
-        self.db_connection = self.connect()
-
-
-    def connect(self):
-        connection = psycopg2.connect(self.DB_CONNECTION_STR)
-        self.connected = True
-        print('DB CONNECTION IS OPEN')
-        return connection
-    
-    @property # DELETE PROPERTY
-    def cursor(self):
-        return self.db_connection.cursor()
-
-    def disconnect(self):
-        self.db_connection.close()
-        print('DB CONNECTION CLOSED')
-
-    def send_query(self,query,data):
-        if self.connected:
-            self.cursor.execute(query,data) #TRY EXCEПТ
-    
-    def send_select_query(self,query):
-        if self.connected:
-            cur = self.cursor
-            cur.execute(query) #TRY EXCEПТ
-            return  cur.fetchall()
-    
-    
-    def commit(self):
-        self.db_connection.commit()
-        self.cursor.close()
-
-
-class DataInit:
-    """Класс в котором мы через запрос к ДБ получаем список контролируемых параметров"""
-
-    RAW_DATA = None # Data collected after SQL request
-    CL_LIST_FROM_DB = [] # It's the result. List with dictionaries with a cl inside. 
-    DATA_INIT_QUERY = 'SELECT cl_type_id,cl_equip_group_id,cl_name,cl_setpoint,cl_plc_path,cl_data_type FROM cl_list' # SQL query for pulling cl_list from the CL_LIST table.
-    DATA_STRUCTURE = ('cl_type_id', 'cl_equip_group_id', 'cl_name', 'cl_setpoint','cl_plc_path','cl_data_type') # TODO: GET DATA STRUCTURE()
-
-    def __init__(self,db=None):
-        """При инициировании вытягиваем данные из таблицы. Если в конструктор не передать дб ничего не получится"""
-        self.db = db
-        self.start_it()
-
-
-    @property
-    def cl_list(self):
-        """ Метод, возвращающий подготовленный для создания объекта Center Line список со словарями""" # TODO: Изменить описание.
-        if len(self.CL_LIST_FROM_DB) > 0:
-            return self.CL_LIST_FROM_DB
-        else:
-            return self.generate_cl_list()
-    
-    def start_it(self):
-        try:
-            self._get_cl_list_() # Get the data.
-        except FileNotFoundError:
-            print('Тут что то не так с подключением к db')
-        except Exception as e:
-            print(e)
-
-
-    def _get_cl_list_(self):
-        if self.db:
-            self.RAW_DATA = self.db.send_select_query(self.DATA_INIT_QUERY)
-        else:
-            raise FileNotFoundError
-    
-    def generate_cl_list(self):
-        if self.RAW_DATA:
-            for data in self.RAW_DATA:
-                data_dict = dict(zip(self.DATA_STRUCTURE, data))
-                self.CL_LIST_FROM_DB.append(data_dict)
-            return self.CL_LIST_FROM_DB    
-
+import test_db
+import test_init
 
 class Plc:
     def __init__(self,address,port,name='Unnamed'):
@@ -263,8 +175,16 @@ class SwitchEventControl(StateControler):
     def finish_event(self):
             self._set_time()
             
-
 if __name__ == "__main__":
+
+    db = test_db.Database() # инициируем базу данных
     
-    db = Database()
+    param_dict = test_init.DataInit(db).generate_cl_list() # достаём данные {} из таблицы cl_list
+    print(*param_dict,sep="\n")
+    
+    plc = Plc('192.168.1.177.1.1',801,'Combiner') # Подключаемся к ПЛК
+    
+    var_1 = # И тут мне надо сделать так, что бы класс Variable Кушал DICT Как параметры
+    
+    plc.close_connection()
     db.disconnect()
