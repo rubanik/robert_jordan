@@ -1,6 +1,6 @@
 import datetime
 import pyads
-import psycopg as psycopg2
+import psycopg2 #as psycopg2
 
 import test_db
 import test_init
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     
     plc = Plc('192.168.1.177.1.1',801,'Combiner') # Подключаемся к ПЛК
     
-    var_1 = # И тут мне надо сделать так, что бы класс Variable Кушал DICT Как параметры
+    var_1 = None # И тут мне надо сделать так, что бы класс Variable Кушал DICT Как параметр
     
     plc.close_connection()
     db.disconnect()
