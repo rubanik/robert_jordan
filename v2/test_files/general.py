@@ -48,6 +48,7 @@ class Variable:
             return self.plc.read_by_name(self.path,self.var_type)# read from plc
 
 
+
 class StateControler:
 
     QUERY = 'BASIC_QUERY'
