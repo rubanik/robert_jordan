@@ -62,22 +62,6 @@ class Variable:
 
         return type
 
-# class Variable:
-
-    # def __init__(self,path,var_type,plc,
-                # name='',ctrl_type = 'state', test = None):
-        # self.path = path
-        # self.name = name if name else path
-        # self.var_type = var_type
-        # self.plc = plc
-        # self.test = test
-
-    # @property
-    # def value(self):
-        # if self.test == True:
-            # return self.test
-        # else: 
-            # return self.plc.read_by_name(self.path,self.var_type)# read from plc
 
 
 
