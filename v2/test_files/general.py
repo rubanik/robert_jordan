@@ -32,20 +32,52 @@ class Plc:
 
 class Variable:
 
-    def __init__(self,path,var_type,plc,
-                name='',ctrl_type = 'state', test = None):
-        self.path = path
-        self.name = name if name else path
-        self.var_type = var_type
-        self.plc = plc
-        self.test = test
-
+    def __init__(self,plc,param):
+        self.plc = plc # Controller with PLC inside
+        self.cl_id = param['cl_id'] 
+        self.cl_type = param['cl_type_id'] # type like KEY,MASTER,BRAND
+        self.cl_equip_group_id = param['cl_equip_group_id'] # Group is like GD, GIMA, etc
+        self.cl_name =  param['cl_name'] if param['cl_name'] else param['cl_plc_path'] # If there is no name use plc.path
+        self.cl_path = param['cl_plc_path']
+        self.var_type = self.choose_pyads_plc_type(param['cl_data_type'])
+        
     @property
     def value(self):
-        if self.test == True:
-            return self.test
-        else: 
-            return self.plc.read_by_name(self.path,self.var_type)# read from plc
+        try:
+            value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
+            return int(value)
+        except Exception as ex:
+            print('Проблема при считывании переменной', ex, sep='\n')
+    
+    def choose_pyads_plc_type(self,cl_var_type):
+        """ Выбираем на основе полученной str с типом тип pyads.PLCTYPE..."""
+        type = None
+
+        if cl_var_type == 'INT':
+            type = pyads.PLCTYPE_INT
+        elif cl_var_type == 'BOOL':
+            type = pyads.PLCTYPE_BOOL
+        elif cl_var_type == 'REAL':
+            type = pyads.PLCTYPE_LREAL
+
+        return type
+
+# class Variable:
+
+    # def __init__(self,path,var_type,plc,
+                # name='',ctrl_type = 'state', test = None):
+        # self.path = path
+        # self.name = name if name else path
+        # self.var_type = var_type
+        # self.plc = plc
+        # self.test = test
+
+    # @property
+    # def value(self):
+        # if self.test == True:
+            # return self.test
+        # else: 
+            # return self.plc.read_by_name(self.path,self.var_type)# read from plc
 
 
 
@@ -75,11 +107,9 @@ class StateControler:
     def get_data(self):
         return 'Some DATA'
 
-    def execute_query(self):
-        if self.var.test:    
-            db_execute(self.QUERY, self.get_data())
-        else:
-            database.send_query(self.QUERY, self.get_data())
+    def execute_query(self): 
+        print(self.QUERY)
+        db.send_query(self.QUERY, self.get_data())
 
 
 class SwitchControl(StateControler):
@@ -88,7 +118,14 @@ class SwitchControl(StateControler):
     Фиксирует изменение состояния Bool переменной. Идёт фиксация времени и состояние.
     """
 
-    QUERY = 'SWITCH_QUERY'
+    QUERY = """INSERT INTO cl_change_log
+                    (
+                        tstamp,
+                        cl_id,
+                        cl_value
+                    )
+                    VALUES (%s,%s,%s)
+                    """
 
     last_change_time = ''
 
@@ -98,16 +135,16 @@ class SwitchControl(StateControler):
         return datetime.datetime.now()
 
     def get_data(self):
-        name = self.var.name
+        cl_id = self.var.cl_id
         value = self.var.value
         timest = self.time_of_switch
 
-        return (name,timest,value)
+        return (timest,cl_id,value)
 
 
 class SwitchEventControl(StateControler):
     
-    QUERY = '''INSERT INTO process_flow_log
+    QUERY = '''INSERT INTO cl_change_log
                     (
                         start_date, 
                         finish_date, 
@@ -183,9 +220,17 @@ if __name__ == "__main__":
     param_dict = test_init.DataInit(db).generate_cl_list() # достаём данные {} из таблицы cl_list
     print(*param_dict,sep="\n")
     
-    plc = Plc('192.168.1.177.1.1',801,'Combiner') # Подключаемся к ПЛК
+    plc = Plc('10.44.1.14.1.1',801,'Combiner') # Подключаемся к ПЛК
     
-    var_1 = None # И тут мне надо сделать так, что бы класс Variable Кушал DICT Как параметр
+    var_1 = Variable(plc,param_dict[2])
+    sc = SwitchControl(var_1)
+    print(var_1.value)
     
-    plc.close_connection()
-    db.disconnect()
+    try:
+        while 1:
+            sc.check_state()
+    except Exception as e:
+        print(e)
+    finally:
+        plc.close_connection()
+        db.disconnect()

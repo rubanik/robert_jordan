@@ -13,15 +13,15 @@ logging.basicConfig(
     format='[%(levelname)s]: %(asctime)s %(message)s', 
     level=logging.DEBUG)
 
-#PLC_ADS_ADR = '10.44.1.14.1.1'
-PLC_ADS_ADR_HOME = '192.168.1.177.1.1'
+PLC_ADS_ADR_HOME = '10.44.1.14.1.1'
+#PLC_ADS_ADR_HOME = '192.168.1.177.1.1'
 PLC_ADS_PORT = 801
 USER_NAME = 'admin'
 
 TEST_DATA = (datetime.datetime.now(),datetime.datetime.now(),random.randint(0,100),'PLC.TEST_BOOL','admin')
 
 #connection_info = "dbname=combiner_data user=admin password=admin host=localhost"
-connection_info = "dbname=combiner_data user=postgres password=1122 host=localhost"
+connection_info = "dbname=combiner_data user=remote_user password=remote host=10.143.253.45"
 
 variable_list = ['PF_Paper_Unwinding.bobbin_change_diameter_npr',
                 'FC_M3_Receiver_Ch2_Interface.o_filter_sender_ok_dvr',

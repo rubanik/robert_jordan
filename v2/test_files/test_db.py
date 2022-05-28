@@ -32,6 +32,8 @@ class Database:
     def send_query(self,query,data):
         if self.connected:
             self.cursor.execute(query,data) #TRY EXCEПТ
+            self.commit()
+            
     
     def send_select_query(self,query):
         if self.connected:
