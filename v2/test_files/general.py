@@ -41,13 +41,16 @@ class Variable:
         self.cl_path = param['cl_plc_path']
         self.var_type = self.choose_pyads_plc_type(param['cl_data_type'])
         
+    def __repr__(self):
+        return self.cl_name
+        
     @property
     def value(self):
         try:
             value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
             return int(value)
         except Exception as ex:
-            print('Проблема при считывании переменной', ex, sep='\n')
+            print('Проблема при считывании переменной', ex, self.cl_path, sep='\n')
     
     def choose_pyads_plc_type(self,cl_var_type):
         """ Выбираем на основе полученной str с типом тип pyads.PLCTYPE..."""
@@ -57,9 +60,10 @@ class Variable:
             type = pyads.PLCTYPE_INT
         elif cl_var_type == 'BOOL':
             type = pyads.PLCTYPE_BOOL
-        elif cl_var_type == 'REAL':
+        elif cl_var_type == 'LREAL':
             type = pyads.PLCTYPE_LREAL
-
+        elif cl_var_type == 'DINT':
+            type = pyads.PLCTYPE_DINT
         return type
 
 
@@ -206,13 +210,24 @@ if __name__ == "__main__":
     
     plc = Plc('10.44.1.14.1.1',801,'Combiner') # Подключаемся к ПЛК
     
-    var_1 = Variable(plc,param_dict[2])
-    sc = SwitchControl(var_1)
-    print(var_1.value)
+    var_list = []
+    contrl_list = []
+    
+    for entry in param_dict:
+        variable = Variable(plc,entry)
+        var_list.append(variable)
+        contrl_list.append(SwitchControl(variable))
+
+    
+    
+    #var_1 = Variable(plc,param_dict[1])
+    #sc = SwitchControl(var_1)
+    #print(var_1.value)
     
     try:
         while 1:
-            sc.check_state()
+            for item in contrl_list:
+                item.check_state()
     except Exception as e:
         print(e)
     finally:
