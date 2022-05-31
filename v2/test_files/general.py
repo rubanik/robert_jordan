@@ -67,8 +67,6 @@ class Variable:
         return type
 
 
-
-
 class StateControler:
 
     QUERY = 'BASIC_QUERY'
