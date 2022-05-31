@@ -11,6 +11,7 @@ class MainCycle:
     
     db_connection = None
     init_parameters_dict = None
+    plc_connection = None
     
     def __init__(self,work_to_do,cycle_time=0.100):
         self.__cycle_time__ = ct
@@ -45,4 +46,12 @@ class MainCycle:
     
     def set_plc_connection(self):
         try:
+            if not self.plc_connection:
+                self.plc_connection = general.Plc(PLC_ADS_ADDRESS,PLC_ADS_PORT)
+            else:
+                print('Соединение с контроллером уже установлено')
+        except Exception as ex_plc:
+            print('Возникла проблема при соединении с Базой данных', ex_plc, sep='\n')
+
+            
             
