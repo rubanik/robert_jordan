@@ -6,8 +6,12 @@ class DataInit:
 
     RAW_DATA = None # Data collected after SQL request
     CL_LIST_FROM_DB = [] # It's the result. List with dictionaries with a cl inside. 
-    DATA_INIT_QUERY = 'SELECT cl_id,cl_type_id,cl_equip_group_id,cl_name,cl_setpoint,cl_plc_path,cl_data_type FROM cl_list' # SQL query for pulling cl_list from the CL_LIST table.
-    DATA_STRUCTURE = ('cl_id','cl_type_id', 'cl_equip_group_id', 'cl_name', 'cl_setpoint','cl_plc_path','cl_data_type') # TODO: GET DATA STRUCTURE()
+    DATA_INIT_QUERY = 'SELECT cl_id,cl_type_id,cl_equip_group_id, \
+                        cl_name,cl_setpoint,cl_plc_path,cl_data_type, \
+                        cl_control_type_id FROM cl_list' # SQL query for pulling cl_list from the CL_LIST table.
+                        
+    DATA_STRUCTURE = ('cl_id','cl_type_id', 'cl_equip_group_id', 'cl_name',
+                      'cl_setpoint','cl_plc_path','cl_data_type','cl_control_type_id') # TODO: GET DATA STRUCTURE()
 
     def __init__(self,db=None):
         """При инициировании вытягиваем данные из таблицы. Если в конструктор не передать дб ничего не получится"""

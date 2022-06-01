@@ -40,6 +40,7 @@ class Variable:
         self.cl_name =  param['cl_name'] if param['cl_name'] else param['cl_plc_path'] # If there is no name use plc.path
         self.cl_path = param['cl_plc_path']
         self.var_type = self.choose_pyads_plc_type(param['cl_data_type'])
+        self.control_type = param['cl_control_type_id']
         
     def __repr__(self):
         return self.cl_name

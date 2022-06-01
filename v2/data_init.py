@@ -6,7 +6,7 @@ class Database:
     DB_USER = 'remote_user'
     DB_PASS = 'remote'
     DB_HOST = '10.143.253.45'
-    DB_ALT = 'CSV'              # Альтернативная DB. На счучай сбоя в подключении.
+    DB_ALT = 'CSV'              # TODO: Альтернативная DB. На счучай сбоя в подключении.
 
     DB_CONNECTION_STR = f'dbname={DB_NAME} user={DB_USER} password={DB_PASS} host={DB_HOST}'
 
