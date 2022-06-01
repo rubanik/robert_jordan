@@ -4,10 +4,17 @@ import test_db
 import test_init
 import general
 
+import signal
+
 
 PLC_ADS_ADDRESS = '10.44.1.14.1.1'
 PLC_ADS_PORT = 801
 
+def ctrl_c_handler(signum, frame):
+    res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
+    if res == 'y':
+        cycle.stop_cycle()
+        exit(1)
 
 class MainCycle:
     
@@ -99,7 +106,14 @@ class MainCycle:
                 self.db_connection.disconnect()
                 self.plc_connection.close_connection()
                 break
-                
+    
+    def stop_cycle(self):       
+        
+        self.db_connection.disconnect()
+        self.plc_connection.close_connection()
                 
 if __name__ == '__main__':
-    MainCycle().start()
+    
+    signal.signal(signal.SIGINT, ctrl_c_handler)
+    cycle = MainCycle()
+    cycle.start()
