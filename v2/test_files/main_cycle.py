@@ -1,3 +1,5 @@
+from time import sleep
+
 import test_db
 import test_init
 import general
@@ -30,6 +32,8 @@ class MainCycle:
         self.generate_var_list()
         # step 5:Create list of State Controllers 
         self.generate_state_ctrl_list()
+        # step 6:Run state_check() task
+        self.run_task()
             
     def set_db_connection(self):
         try:
@@ -80,3 +84,16 @@ class MainCycle:
                         general.SwitchControl(var))
         except Exception as ex_st_ctrl:
             print('Возникла проблема при генерации State Controllers', ex_st_ctrl, sep='\n')
+    
+    def task_cycle(self,tasks):
+        for item in tasks:
+            item.check_state()
+        
+    def run_task(self):
+        while 1:
+            try:
+                task_cycle(self.state_controller_list)
+                sleep(self.cycle_time)
+            except:
+                print('Main cycle stopped')
+                break
