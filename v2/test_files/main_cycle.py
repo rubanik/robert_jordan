@@ -13,6 +13,7 @@ class MainCycle:
     init_parameters_dict = None
     plc_connection = None
     variables_list = []
+    state_controller_list = []
 
     
     def __init__(self,work_to_do,cycle_time=0.100):
@@ -27,6 +28,8 @@ class MainCycle:
         self.set_plc_connection()
         # step 4:Create all Variables() with self.init_param_list
         self.generate_var_list()
+        # step 5:Create list of State Controllers 
+        self.generate_state_ctrl_list()
             
     def set_db_connection(self):
         try:
@@ -67,3 +70,13 @@ class MainCycle:
                         general.Variable(self.plc_connection,parameter))
         except Exception as ex_var_gen:
             print('Возникла проблема при генерации переменных', ex_var_gen, sep='\n')
+    
+    
+    def generate_state_ctrl_list(self):
+        try:
+            if self.variables_list:
+                for variable in self.variables_list:
+                    self.state_controller_list.append(
+                        general.SwitchControl(var))
+        except Exception as ex_st_ctrl:
+            print('Возникла проблема при генерации State Controllers', ex_st_ctrl, sep='\n')
