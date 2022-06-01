@@ -18,8 +18,8 @@ class MainCycle:
     state_controller_list = []
 
     
-    def __init__(self,work_to_do,cycle_time=0.100):
-        self.__cycle_time__ = ct
+    def __init__(self,cycle_time=0.100):
+        self.__cycle_time__ = cycle_time
         
     def start(self):
         # step 1:Create DB connection
@@ -81,7 +81,7 @@ class MainCycle:
             if self.variables_list:
                 for variable in self.variables_list:
                     self.state_controller_list.append(
-                        general.SwitchControl(var))
+                        general.SwitchControl(variable))
         except Exception as ex_st_ctrl:
             print('Возникла проблема при генерации State Controllers', ex_st_ctrl, sep='\n')
     
@@ -92,8 +92,14 @@ class MainCycle:
     def run_task(self):
         while 1:
             try:
-                task_cycle(self.state_controller_list)
-                sleep(self.cycle_time)
-            except:
-                print('Main cycle stopped')
+                self.task_cycle(self.state_controller_list)
+                sleep(self.__cycle_time__)
+            except Exception as ex_task:
+                print('Main cycle stopped',ex_task,sep='\n')
+                self.db_connection.disconnect()
+                self.plc_connection.close_connection()
                 break
+                
+                
+if __name__ == '__main__':
+    MainCycle().start()
