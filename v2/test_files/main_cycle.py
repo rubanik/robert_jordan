@@ -12,6 +12,8 @@ class MainCycle:
     db_connection = None
     init_parameters_dict = None
     plc_connection = None
+    variables_list = []
+
     
     def __init__(self,work_to_do,cycle_time=0.100):
         self.__cycle_time__ = ct
@@ -23,6 +25,8 @@ class MainCycle:
         self.set_parameter_dict()
         # step 3:Set PLC connection
         self.set_plc_connection()
+        # step 4:Create all Variables() with self.init_param_list
+        self.generate_var_list()
             
     def set_db_connection(self):
         try:
@@ -54,4 +58,12 @@ class MainCycle:
             print('Возникла проблема при соединении с Базой данных', ex_plc, sep='\n')
 
             
-            
+    def generate_var_list(self):
+        try:
+            if (self.init_parameters_dict and
+                self.plc_connection):
+                for parameter in self.init_parameters_dict:
+                    self.variables_list.append(
+                        general.Variable(self.plc_connection,parameter))
+        except Exception as ex_var_gen:
+            print('Возникла проблема при генерации переменных', ex_var_gen, sep='\n')
