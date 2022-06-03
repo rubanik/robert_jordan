@@ -72,8 +72,9 @@ class StateControler:
 
     QUERY = 'BASIC_QUERY'
 
-    def __init__(self,var):
+    def __init__(self,var,db):
         self.var = var
+        self.db = db
         self.prev_state = self.var.value
 
     @property
@@ -96,7 +97,7 @@ class StateControler:
 
     def execute_query(self): 
         print(self.QUERY)
-        db.send_query(self.QUERY, self.get_data())
+        self.db.send_query(self.QUERY, self.get_data())
 
 
 class SwitchControl(StateControler):

@@ -88,7 +88,7 @@ class MainCycle:
             if self.variables_list:
                 for variable in self.variables_list:
                     self.state_controller_list.append(
-                        general.SwitchControl(variable))
+                        general.SwitchControl(variable, self.db_connection))
         except Exception as ex_st_ctrl:
             print('Возникла проблема при генерации State Controllers', ex_st_ctrl, sep='\n')
     
