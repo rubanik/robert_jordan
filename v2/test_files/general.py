@@ -89,7 +89,7 @@ class VarGroup:
                 variable.group = self
     
     def generate_paths(self):
-        return [x.name for x in self.group]
+        return [x.cl_path for x in self.group]
 
     def update_group(self):
         self.act_values = plc.read_group(self.path_list)

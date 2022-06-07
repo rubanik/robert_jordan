@@ -4,7 +4,7 @@ import signal
 import test_db
 import test_init
 import general
-from v2.test_files.general import VarGroup
+
 
 PLC_ADS_ADDRESS = '10.44.1.14.1.1'
 PLC_ADS_PORT = 801
@@ -106,8 +106,8 @@ class MainCycle:
             print('Возникла проблема при генерации State Controllers', ex_st_ctrl, sep='\n')
     
     def generate_group(self):
-        group_list = [var.cl_path for var in self.variables_list if var.control_type == 4]
-        self.act_values_group = VarGroup(group_list,self.plc_connection)
+        group_list = [var for var in self.variables_list if var.control_type == 4]
+        self.act_values_group = general.VarGroup(group_list,self.plc_connection)
 
     def generate_act_val_controller(self):
         self.act_values_controller = general.ActValControl(self.act_values_group)
