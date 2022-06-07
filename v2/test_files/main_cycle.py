@@ -4,6 +4,7 @@ import signal
 import test_db
 import test_init
 import general
+from v2.test_files.general import VarGroup
 
 PLC_ADS_ADDRESS = '10.44.1.14.1.1'
 PLC_ADS_PORT = 801
@@ -23,7 +24,8 @@ class MainCycle:
     plc_connection = None # Ссылка на PYADS соедениение с PLC
     variables_list = [] # Список для хранения объектов Variable
     state_controller_list = [] # Список для хранения StateContreller объектов
-
+    act_values_group = None
+    act_values_controller = None
     
     def __init__(self,cycle_time=0.100):
         self.__cycle_pause_time__ = cycle_time # Время паузы перед след циклом
@@ -44,7 +46,11 @@ class MainCycle:
         self.generate_var_list()
         # step 5:Create list of State Controllers 
         self.generate_state_ctrl_list()
-        # step 6:Run state_check() task
+        # step 6:Create Group of act. values
+        self.generate_group()
+        # step 7:Create Controller for Act.Val Group
+        self.generate_act_val_controller()
+        # step 99:Run state_check() task
         self.run_task()
             
     def set_db_connection(self):
@@ -99,6 +105,13 @@ class MainCycle:
         except Exception as ex_st_ctrl:
             print('Возникла проблема при генерации State Controllers', ex_st_ctrl, sep='\n')
     
+    def generate_group(self):
+        group_list = [var.cl_path for var in self.variables_list if var.control_type == 4]
+        self.act_values_group = VarGroup(group_list,self.plc_connection)
+
+    def generate_act_val_controller(self):
+        self.act_values_controller = general.ActValControl()
+
     def task_cycle(self,tasks):
         for item in tasks:
             item.check_state()

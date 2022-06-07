@@ -44,6 +44,7 @@ class Variable:
         self.cl_path = param['cl_plc_path']
         self.var_type = self.choose_pyads_plc_type(param['cl_data_type'])
         self.control_type = param['cl_control_type_id']
+        self.group = None
         
     def __repr__(self):
         return self.cl_name
@@ -51,8 +52,11 @@ class Variable:
     @property
     def value(self):
         try:
-            value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
-            return float(value) # TODO: Переделать эту часть кода. возвращаемое значение приводить к типу, который находится в self.var_type
+            if self.group:
+                return self.group.act_values[self.cl_path]
+            else:
+                value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
+                return float(value) # TODO: Переделать эту часть кода. возвращаемое значение приводить к типу, который находится в self.var_type
         except Exception as ex:
             print('Проблема при считывании переменной', ex, self.cl_path, sep='\n')
     
@@ -76,7 +80,7 @@ class VarGroup:
         self.group = group
         self.plc = plc
         self.path_list = self.generate_paths()
-        self.all_values = {}
+        self.act_values = {}
         self.attach_to_group()
 
     def attach_to_group(self):
@@ -88,7 +92,7 @@ class VarGroup:
         return [x.name for x in self.group]
 
     def update_group(self):
-        self.all_values = plc.read_group(self.path_list)
+        self.act_values = plc.read_group(self.path_list)
 
 
 class StateControler:
@@ -223,7 +227,22 @@ class SwitchEventControl(StateControler):
 
     def finish_event(self):
             self._set_time()
-            
+
+class ActValControl():
+
+    QUERY = """INSERT INTO cl_change_log
+                    (
+                        tstamp,
+                        cl_id,
+                        cl_value
+                    )
+                    VALUES (%s,%s,%s)
+                    """
+    def __init__(self,group,timeout = 1) -> None:
+        self.group = group
+        self.timeout = timeout
+    
+
 if __name__ == "__main__":
 
     db = test_db.Database() # инициируем базу данных
