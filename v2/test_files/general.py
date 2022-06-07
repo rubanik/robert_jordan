@@ -28,6 +28,9 @@ class Plc:
     
     def read_by_name(self,path,name):
         return self.plc_connection.read_by_name(path,name)
+    
+    def read_group(self,group) -> dict:
+        return self.plc_connection.read_list_by_name(group)
   
 
 class Variable:
@@ -67,6 +70,25 @@ class Variable:
             type = pyads.PLCTYPE_DINT
         return type
 
+class VarGroup:
+
+    def __init__(self,group,plc):
+        self.group = group
+        self.plc = plc
+        self.path_list = self.generate_paths()
+        self.all_values = {}
+        self.attach_to_group()
+
+    def attach_to_group(self):
+        for variable in self.group:
+            if not variable.group:
+                variable.group = self
+    
+    def generate_paths(self):
+        return [x.name for x in self.group]
+
+    def update_group(self):
+        self.all_values = plc.read_group(self.path_list)
 
 
 class StateControler:
