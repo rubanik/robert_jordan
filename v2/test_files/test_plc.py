@@ -1,10 +1,9 @@
 import pyads
+from time import sleep
 
 plc =  pyads.Connection('10.44.1.14.1.1',801)
 
-plc.open()
-
-try:
-    plc.read_by_name(pself.cl_path,pyads.)
-
-plc.close()
+with plc:
+    while True:
+        print(plc.read_by_name('MS_Flow1_Cut_Centering_Rear.center_abs_pos_npr',pyads.PLCTYPE_LREAL))
+        sleep(1)

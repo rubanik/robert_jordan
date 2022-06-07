@@ -49,7 +49,7 @@ class Variable:
     def value(self):
         try:
             value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
-            return int(value)
+            return float(value) # ??
         except Exception as ex:
             print('Проблема при считывании переменной', ex, self.cl_path, sep='\n')
     
@@ -66,6 +66,7 @@ class Variable:
         elif cl_var_type == 'DINT':
             type = pyads.PLCTYPE_DINT
         return type
+
 
 
 class StateControler:
@@ -96,7 +97,7 @@ class StateControler:
         return 'Some DATA'
 
     def execute_query(self): 
-        print(self.QUERY)
+        print(self.get_data())
         self.db.send_query(self.QUERY, self.get_data())
 
 

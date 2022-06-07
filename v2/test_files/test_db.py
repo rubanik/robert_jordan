@@ -48,6 +48,6 @@ class Database:
 
 if __name__ == "__main__":
     db = Database()
-    l = db.send_select_query('SELECT * from cl_list')
-    print(l)
+    l = db.send_select_query('SELECT * from cl_list ORDER BY cl_id')
+    print(*l,sep='\n')
     db.disconnect()
