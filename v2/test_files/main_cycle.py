@@ -110,7 +110,7 @@ class MainCycle:
         self.act_values_group = VarGroup(group_list,self.plc_connection)
 
     def generate_act_val_controller(self):
-        self.act_values_controller = general.ActValControl()
+        self.act_values_controller = general.ActValControl(self.act_values_group)
 
     def task_cycle(self,tasks):
         for item in tasks:
