@@ -1,34 +1,39 @@
 from time import sleep
+import signal
 
 import test_db
 import test_init
 import general
 
-import signal
-
-
 PLC_ADS_ADDRESS = '10.44.1.14.1.1'
 PLC_ADS_PORT = 801
 
 def ctrl_c_handler(signum, frame):
+    """" Обработчик нажатия CTRL+C. После нажатия аккуратно закрывает всё"""
+
     res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
     if res == 'y':
         cycle.stop_cycle()
         exit(1)
 
 class MainCycle:
-    
-    db_connection = None
-    init_parameters_dict = None
-    plc_connection = None
-    variables_list = []
-    state_controller_list = []
+    """Логика работы основного цикла скрипта"""
+    db_connection = None # Переменная для хранения ссылки на ДБ коннектор
+    init_parameters_dict = None # Словарь в котором хранятся изначальные параметры из БД
+    plc_connection = None # Ссылка на PYADS соедениение с PLC
+    variables_list = [] # Список для хранения объектов Variable
+    state_controller_list = [] # Список для хранения StateContreller объектов
 
     
     def __init__(self,cycle_time=0.100):
-        self.__cycle_time__ = cycle_time
+        self.__cycle_pause_time__ = cycle_time # Время паузы перед след циклом
         
-    def start(self):
+    def start(self) -> None:
+        """ 
+        Поэтапное выполнение всех шагов программы, неоходимых для работы.
+        Сначала создаём подключения к ДБ, ПЛК. Собираем начальные данные.
+        последний шаг - запуск цикла опроса\основного рабочего цикла.
+        """
         # step 1:Create DB connection
         self.set_db_connection()
         # step 2:Get initial parameters from DB
@@ -43,6 +48,7 @@ class MainCycle:
         self.run_task()
             
     def set_db_connection(self):
+        """Создаём объект db_connection для работы с БД, с которым будт работать скрипт. """
         try:
             if not self.db_connection:
                 self.db_connection = test_db.Database()
@@ -57,7 +63,7 @@ class MainCycle:
             if not self.init_parameters_dict:
                 self.init_parameters_dict = test_init.DataInit(self.db_connection).generate_cl_list()
             else:
-                return self.init_parameters_dict
+                return self.init_parameters_dict # Зачем что-то возвращать если оно уже имеется? 
         except Exception as ex_init:
             print('Возникла проблема при получении начальных данных',ex_init,sep='\n')
     
@@ -100,7 +106,7 @@ class MainCycle:
         while 1:
             try:
                 self.task_cycle(self.state_controller_list)
-                sleep(self.__cycle_time__)
+                sleep(self.__cycle_pause_time__)
             except Exception as ex_task:
                 print('Main cycle stopped',ex_task,sep='\n')
                 self.db_connection.disconnect()
