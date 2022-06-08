@@ -244,7 +244,7 @@ class ActValControl():
         self.db = db
         self.timeout = timeout
     
-    def send_data_to_db():
+    def check_state(self):
         pass
     
 
