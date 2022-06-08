@@ -79,8 +79,9 @@ class VarGroup:
     def __init__(self,group,plc):
         self.group = group
         self.plc = plc
-        self.path_list = self.generate_paths()
+        self.path_list = []
         self.act_values = {}
+        self.generate_paths()
         self.attach_to_group()
 
     def attach_to_group(self):
@@ -238,9 +239,12 @@ class ActValControl():
                     )
                     VALUES (%s,%s,%s)
                     """
-    def __init__(self,group,timeout = 1) -> None:
+    def __init__(self,group,db, timeout = 1) -> None:
         self.group = group
+        self.db = db
         self.timeout = timeout
+    
+    def send_data_to_db():
     
 
 if __name__ == "__main__":
