@@ -131,7 +131,7 @@ class MainCycle:
         
         self.db_connection.disconnect()
         self.plc_connection.close_connection()
-                
+        
 if __name__ == '__main__':
     
     signal.signal(signal.SIGINT, ctrl_c_handler)
