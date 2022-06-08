@@ -79,8 +79,9 @@ class VarGroup:
     def __init__(self,group,plc):
         self.group = group
         self.plc = plc
-        self.path_list = self.generate_paths()
+        self.path_name_dict = {}
         self.act_values = {}
+        self.generate_paths_and_names()
         self.attach_to_group()
 
     def attach_to_group(self):
@@ -88,11 +89,11 @@ class VarGroup:
             if not variable.group:
                 variable.group = self
     
-    def generate_paths(self):
-        return [x.cl_path for x in self.group]
+    def generate_paths_and_names(self):
+        return {x.cl_path : x.cl_name for x in self.group}
 
     def update_group(self):
-        self.act_values = plc.read_group(self.path_list)
+        self.act_values = plc.read_group(list(self.path_name_dict.keys()))
 
 
 class StateControler:
@@ -238,9 +239,13 @@ class ActValControl():
                     )
                     VALUES (%s,%s,%s)
                     """
-    def __init__(self,group,timeout = 1) -> None:
+    def __init__(self,group,db, timeout = 1) -> None:
         self.group = group
+        self.db = db
         self.timeout = timeout
+    
+    def send_data_to_db():
+        pass
     
 
 if __name__ == "__main__":
