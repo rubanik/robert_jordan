@@ -23,7 +23,7 @@ class MainCycle:
     init_parameters_dict = None # Словарь в котором хранятся изначальные параметры из БД
     plc_connection = None # Ссылка на PYADS соедениение с PLC
     variables_list = [] # Список для хранения объектов Variable
-    state_controller_list = [] # Список для хранения StateContreller объектов
+    controller_list = [] # Список для хранения Contreller объектов
     act_values_group = None
     act_values_controller = None
     
@@ -100,7 +100,7 @@ class MainCycle:
             if self.variables_list:
                 for variable in self.variables_list:
                     if variable.control_type == 2:
-                        self.state_controller_list.append(
+                        self.controller_list.append(
                             general.SwitchControl(variable, self.db_connection))
         except Exception as ex_st_ctrl:
             print('Возникла проблема при генерации State Controllers', ex_st_ctrl, sep='\n')
@@ -110,7 +110,7 @@ class MainCycle:
         self.act_values_group = general.VarGroup(group_list,self.plc_connection)
 
     def generate_act_val_controller(self):
-        self.act_values_controller = general.ActValControl(self.act_values_group,self.db_connection)
+        self.controller_list.append(general.ActValControl(self.act_values_group,self.db_connection))
         
 
     def task_cycle(self,tasks):
@@ -120,7 +120,7 @@ class MainCycle:
     def run_task(self):
         while 1:
             try:
-                self.task_cycle(self.state_controller_list)
+                self.task_cycle(self.controller_list)
                 sleep(self.__cycle_pause_time__)
             except Exception as ex_task:
                 print('Main cycle stopped',ex_task,sep='\n')
