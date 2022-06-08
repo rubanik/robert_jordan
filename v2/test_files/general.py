@@ -245,6 +245,7 @@ class ActValControl():
         self.timeout = timeout
     
     def send_data_to_db():
+        pass
     
 
 if __name__ == "__main__":
