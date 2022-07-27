@@ -53,6 +53,7 @@ class DataInit:
                 #self.CL_LIST_FROM_DB.append(data_dict)
             return result
             #return self.CL_LIST_FROM_DB
+            
     
 class db_test:
 

@@ -99,16 +99,37 @@ class VarGroup:
 class StateControler:
 
     QUERY = 'BASIC_QUERY'
+    INIT_QUERY = "SELECT cl_value FROM cl_last_changes_view WHERE cl_id = %s"
 
     def __init__(self,var,db):
         self.var = var
         self.db = db
-        self.prev_state = self.var.value
+        self.init = True
+        self.prev_state = self.get_previous_state()
 
     @property
     def change_detected(self):
         return self.var.value != self.prev_state
+        
 
+    def get_previous_state(self):
+        """ Возвращаем последнее значение переменной. Если создаём переменную, при первом запуске нужно вытащить последнее зафиксированное значение из БД"""
+        if self.init:
+            try:
+                last_value =  float(self.db.send_select_query(self.INIT_QUERY,(self.var.cl_id,))[0][0])
+                actual_value = float(self.var.value)
+                print(round(last_value,2), round(actual_value,2))
+                if round(last_value,2) == round(actual_value,2):
+                    return actual_value
+                else:
+                    return last_value
+            except:
+                print('Что то пошло не так при попытке получить последнее значение переменной')
+            finally:
+                init = False
+        else:
+            return self.var.value
+    
 
     def set_previous_state(self):
         self.prev_state = self.var.value

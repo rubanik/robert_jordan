@@ -35,10 +35,10 @@ class Database:
             self.commit()
             
     
-    def send_select_query(self,query):
+    def send_select_query(self,query,data=None):
         if self.connected:
             cur = self.cursor
-            cur.execute(query) #TRY EXCEПТ
+            cur.execute(query,data) #TRY EXCEПТ
             return  cur.fetchall()
     
     

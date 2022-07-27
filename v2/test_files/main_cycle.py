@@ -22,7 +22,7 @@ class MainCycle:
     db_connection = None # Переменная для хранения ссылки на ДБ коннектор
     init_parameters_dict = None # Словарь в котором хранятся изначальные параметры из БД
     plc_connection = None # Ссылка на PYADS соедениение с PLC
-    variables_list = [] # Список для хранения объектов Variable
+    variables_list = [] # Список для хранения объектов Variable  
     controller_list = [] # Список для хранения Contreller объектов
     act_values_group = None
     act_values_controller = None
