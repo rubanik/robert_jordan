@@ -56,7 +56,7 @@ class Variable:
                 return self.group.act_values[self.cl_path]
             else:
                 value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
-                return float(value) # TODO: Переделать эту часть кода. возвращаемое значение приводить к типу, который находится в self.var_type
+                return round(float(value),2) # TODO: Переделать эту часть кода. возвращаемое значение приводить к типу, который находится в self.var_type
         except Exception as ex:
             print('Проблема при считывании переменной', ex, self.cl_path, sep='\n')
     
