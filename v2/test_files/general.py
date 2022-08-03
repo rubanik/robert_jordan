@@ -56,23 +56,32 @@ class Variable:
                 return self.group.act_values[self.cl_path]
             else:
                 value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
+                
+            if self.var_type == 'STRING':
+                return value
+            else:
                 return round(float(value),2) # TODO: Переделать эту часть кода. возвращаемое значение приводить к типу, который находится в self.var_type
+                
         except Exception as ex:
             print('Проблема при считывании переменной', ex, self.cl_path, sep='\n')
     
     def choose_pyads_plc_type(self,cl_var_type):
         """ Выбираем на основе полученной str с типом тип pyads.PLCTYPE..."""
-        type = None
+        var_type = None
 
         if cl_var_type == 'INT':
-            type = pyads.PLCTYPE_INT
+            var_type = pyads.PLCTYPE_INT
         elif cl_var_type == 'BOOL':
-            type = pyads.PLCTYPE_BOOL
+            var_type = pyads.PLCTYPE_BOOL
         elif cl_var_type == 'LREAL':
-            type = pyads.PLCTYPE_LREAL
+            var_type = pyads.PLCTYPE_LREAL
         elif cl_var_type == 'DINT':
-            type = pyads.PLCTYPE_DINT
-        return type
+            var_type = pyads.PLCTYPE_DINT
+        elif cl_var_type == 'SHORT':
+            var_type = pyads.PLCTYPE_SHORT
+        elif cl_var_type == 'STRING':
+            var_type = pyads.PLCTYPE_STRING            
+        return var_type
 
 class VarGroup:
 
