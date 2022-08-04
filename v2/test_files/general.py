@@ -194,6 +194,18 @@ class SwitchControl(StateControler):
         return (timest,cl_id,value)
 
 
+class StopMsgControl(SwitchControl):
+
+    QUERY = """INSERT INTO stop_msg_log
+                    (
+                        tstamp,
+                        cl_id,
+                        cl_value
+                    )
+                    VALUES (%s,%s,%s)
+                    """
+
+
 class SwitchEventControl(StateControler):
     
     QUERY = '''INSERT INTO cl_change_log
