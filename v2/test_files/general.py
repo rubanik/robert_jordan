@@ -64,9 +64,9 @@ class Variable:
     
 
     def set_value_type(self,value):
-        if self.type == 'STRING':
+        if self.var_type == pyads.PLCTYPE_STRING :
             return str(value)
-        elif self.type in ('INT','FLOAT'):
+        elif self.var_type in (pyads.PLCTYPE_DINT,pyads.PLCTYPE_INT,pyads.PLCTYPE_LREAL,pyads.PLCTYPE_BOOL):
             return round(float(value),2)
         else:
             print('WRONG VALUE TYPE')
@@ -83,8 +83,6 @@ class Variable:
             var_type = pyads.PLCTYPE_LREAL
         elif cl_var_type == 'DINT':
             var_type = pyads.PLCTYPE_DINT
-        elif cl_var_type == 'SHORT':
-            var_type = pyads.PLCTYPE_SHORT
         elif cl_var_type == 'STRING':
             var_type = pyads.PLCTYPE_STRING            
         return var_type
@@ -199,12 +197,19 @@ class StopMsgControl(SwitchControl):
     QUERY = """INSERT INTO stop_msg_log
                     (
                         tstamp,
-                        id,
-                        value
+                        cl_id,
+                        msg_text
                     )
                     VALUES (%s,%s,%s)
                     """
-
+    
+    INIT_QUERY = """SELECT msg_text FROM stop_msg_log WHERE cl_id=%s ORDER BY tstamp DESC LIMIT 1"""
+    
+    def get_previous_state(self):
+        last_msg = self.db.send_select_query(self.INIT_QUERY,(self.var.cl_id,))[0][0]
+        act_msg = self.var.value
+        print('StopMsgControl: Last Message: ',last_msg)
+        return last_msg
 
 class SwitchEventControl(StateControler):
     
