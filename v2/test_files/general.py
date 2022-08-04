@@ -199,8 +199,8 @@ class StopMsgControl(SwitchControl):
     QUERY = """INSERT INTO stop_msg_log
                     (
                         tstamp,
-                        cl_id,
-                        cl_value
+                        id,
+                        value
                     )
                     VALUES (%s,%s,%s)
                     """
