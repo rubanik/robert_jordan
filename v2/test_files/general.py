@@ -57,14 +57,20 @@ class Variable:
             else:
                 value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
                 
-            if self.var_type == 'STRING':
-                return value
-            else:
-                return round(float(value),2) # TODO: Переделать эту часть кода. возвращаемое значение приводить к типу, который находится в self.var_type
+            return self.set_value_type(value)
                 
         except Exception as ex:
             print('Проблема при считывании переменной', ex, self.cl_path, sep='\n')
     
+
+    def set_value_type(self,value):
+        if self.type == 'STRING':
+            return str(value)
+        elif self.type in ('INT','FLOAT'):
+            return round(float(value),2)
+        else:
+            print('WRONG VALUE TYPE')
+
     def choose_pyads_plc_type(self,cl_var_type):
         """ Выбираем на основе полученной str с типом тип pyads.PLCTYPE..."""
         var_type = None
