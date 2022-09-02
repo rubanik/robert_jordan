@@ -6,22 +6,26 @@ import test_db
 import test_init
 
 class Plc:
-    def __init__(self,address,port,name='Unnamed'):
+    """Create connection to a PLC and reading variables from it."""
+    def __init__(self,address:str,port:int,name='Unnamed'):
         self.address = address
         self.port = port
         self.plc_connection = self.connect()
         self._open_connection()
         self.test_state = False
 
-    def connect(self):
+    def connect(self) -> pyads.Connection:
+        """ Get pyads PLC connection object """
         return pyads.Connection(self.address, self.port)
     
-    def _open_connection(self):
+    def _open_connection(self) -> None:
+        """ Open the PLC Connection( open new session )"""
         if self.plc_connection:
             self.plc_connection.open()
             print('PLC CONNECTION IS OPEN')
 
     def close_connection(self):
+        """ Close existing PLC connection """
         if self.plc_connection.is_open:
             self.plc_connection.close()
             print('PLC CONNECTION IS CLOSE')
