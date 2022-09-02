@@ -1,3 +1,4 @@
+from ctypes.wintypes import BOOL
 import datetime
 import pyads
 import psycopg2 #as psycopg2
@@ -37,7 +38,15 @@ class Plc:
         return self.plc_connection.read_list_by_name(group)
   
 
-class Variable:
+class Variable: 
+                   
+    var_types = {
+        'INT': pyads.PLCTYPE_INT,
+        'BOOL': pyads.PLCTYPE_BOOL,
+        'LREAL': pyads.PLCTYPE_LREAL,
+        'DINT': pyads.PLCTYPE_DINT,
+        'STRING': pyads.PLCTYPE_STRING
+    }
 
     def __init__(self,plc,param):
         self.plc = plc # Controller with PLC inside
@@ -60,7 +69,6 @@ class Variable:
                 return self.group.act_values[self.cl_path]
             else:
                 value = self.plc.read_by_name(self.cl_path,self.var_type)# read from plc
-                
             return self.set_value_type(value)
                 
         except Exception as ex:
@@ -77,6 +85,8 @@ class Variable:
 
     def choose_pyads_plc_type(self,cl_var_type):
         """ Выбираем на основе полученной str с типом тип pyads.PLCTYPE..."""
+
+        return self.var_types.get(cl_var_type)
         var_type = None
 
         if cl_var_type == 'INT':
